@@ -23,9 +23,9 @@
  
 int R1 = 1000;
 int Ra = 25; //Resistance of powering Pins
-int ECPin = A3;
-int ECGround = A2;
-int ECPower = A1;
+int ECPin = A2;
+int ECGround = A3;
+int ECPower = A5;
  
  
 //*********** Converting to ppm [Learn to use EC it is much better]**************//
@@ -84,8 +84,8 @@ long duration, inches, cm;
 void setup()
 {
   Serial.begin(9600);
-  pinMode(TempProbeNegative, OUTPUT ); //seting ground pin as output for tmp probe
-  digitalWrite(TempProbeNegative, LOW );//Seting it to ground so it can sink current
+  //pinMode(TempProbeNegative, OUTPUT ); //seting ground pin as output for tmp probe
+  //digitalWrite(TempProbeNegative, LOW );//Seting it to ground so it can sink current
   pinMode(ECPin,INPUT);
   pinMode(ECPower, OUTPUT);//Setting pin for sourcing current
   pinMode(ECGround, OUTPUT);//setting pin for sinking current
@@ -163,12 +163,12 @@ Serial.print(ppm);
 Serial.print(",");
 Serial.print("\"temperature\":");
 Serial.print(Temperature);
-Serial.print(",");
-Serial.print("\"cm\":");
-Serial.print(cm);
-Serial.print(",");
-Serial.print("\"in\":");
-Serial.print(inches);
+// Serial.print(",");
+// Serial.print("\"cm\":");
+// Serial.print(cm);
+// Serial.print(",");
+// Serial.print("\"in\":");
+// Serial.print(inches);
 Serial.println("}");
  
 /*
@@ -210,28 +210,28 @@ void loop()
   
   // The PING))) is triggered by a HIGH pulse of 2 or more microseconds.
   // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
-  pinMode(pingPin, OUTPUT);
-  digitalWrite(pingPin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(pingPin, HIGH);
-  delayMicroseconds(5);
-  digitalWrite(pingPin, LOW);
+  // pinMode(pingPin, OUTPUT);
+  // digitalWrite(pingPin, LOW);
+  // delayMicroseconds(2);
+  // digitalWrite(pingPin, HIGH);
+  // delayMicroseconds(5);
+  // digitalWrite(pingPin, LOW);
   
   // The same pin is used to read the signal from the PING))): a HIGH pulse
   // whose duration is the time (in microseconds) from the sending of the ping
   // to the reception of its echo off of an object.
-  pinMode(pingPin, INPUT);
-  duration = pulseIn(pingPin, HIGH);
+  // pinMode(pingPin, INPUT);
+  // duration = pulseIn(pingPin, HIGH);
   
-  // convert the time into a distance
-  inches = microsecondsToInches(duration);
-  cm = microsecondsToCentimeters(duration);
+  // // convert the time into a distance
+  // inches = microsecondsToInches(duration);
+  // cm = microsecondsToCentimeters(duration);
    
   GetEC();          //Calls Code to Go into GetEC() Loop [Below Main Loop] dont call this more that 1/5 hhz [once every five seconds] or you will polarise the water
   PrintReadings();  // Cals Print routine [below main loop]
    
    
-  delay(5000);
+  delay(60000);
  
 }
 //************************************** End Of Main Loop **********************************************************************//

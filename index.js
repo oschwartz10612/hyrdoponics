@@ -12,6 +12,7 @@ async function getPort(pnpId) {
 
     for (let i = 0; i < ports.length; i++) {
         const port = ports[i];
+        console.log(port);
         if (pnpId == port.pnpId) {
             return port.path;
         }
@@ -21,7 +22,7 @@ async function getPort(pnpId) {
 async function main() {
 
     var phpPort = await getPort('usb-FTDI_FT230X_Basic_UART_DO00MRHP-if00-port0');
-    var arduinoPort = await getPort('');
+    var arduinoPort = await getPort('usb-1a86_USB2.0-Serial-if00-port0');
 
     if (phpPort) {
         console.log('Initalizing ph port');
@@ -37,10 +38,17 @@ async function main() {
         phParser.on('data', data => {
             console.log(`Ph Value: ${data}`);
             client.publish('home-assistant/hydroponics/ph', data)
+            client.publish('home-assistant/hydroponics/phStatus', 'online');
+        });
+
+        ph.on('close', () => {
+            client.publish('home-assistant/hydroponics/phStatus', 'offline');
+            console.log(`Ph connection lost.`);
         });
     }
 
     if (arduinoPort) {
+        console.log('Initalizing arduino port');
         const arduino = new SerialPort(arduinoPort, { baudRate: 9600 }, err => {
             if (err) {
                 console.error('Could not open port: ', err.message)
@@ -53,9 +61,17 @@ async function main() {
         arduinoParser.on('data', data => {
             var sensorData = JSON.parse(data);
 
-            console.log(sensorData);
+            console.log(`Arduino Data: ${data}`);
             
-            client.publish('home-assistant/hydroponics/ph', data)
+            client.publish('home-assistant/hydroponics/ec', sensorData.ec.toString());
+            client.publish('home-assistant/hydroponics/ppm', sensorData.ppm.toString());
+            client.publish('home-assistant/hydroponics/temperature', sensorData.temperature.toString());
+            client.publish('home-assistant/hydroponics/arduinoStatus', 'online');
+        });
+
+        arduino.on('close', () => {
+            client.publish('home-assistant/hydroponics/arduinoStatus', 'offline');
+            console.log(`Arduino connection lost.`);
         });
     }
 
