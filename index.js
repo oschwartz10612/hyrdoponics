@@ -1,6 +1,7 @@
 const SerialPort = require('serialport')
 const Readline = require('@serialport/parser-readline')
 var mqtt = require('mqtt')
+const si = require('systeminformation');
 
 var client  = mqtt.connect('mqtt://192.168.1.183');
 
@@ -23,6 +24,14 @@ async function main() {
 
     var phpPort = await getPort('usb-FTDI_FT230X_Basic_UART_DO00MRHP-if00-port0');
     var arduinoPort = await getPort('usb-1a86_USB2.0-Serial-if00-port0');
+
+    console.log('Starting system monitor');
+    setInterval(async () => {
+        const data = await si.cpuTemperature();
+        console.log(`CPU Temp: ${data.main}`);
+        client.publish('home-assistant/hydroponics/system', 'online');
+        client.publish('home-assistant/hydroponics/systemTemp', data.main.toString());
+    }, 60000);
 
     if (phpPort) {
         console.log('Initalizing ph port');
