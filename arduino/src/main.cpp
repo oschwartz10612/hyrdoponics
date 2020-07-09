@@ -14,7 +14,11 @@
  
 //************************* User Defined Variables ********************************************************//
  
- const int pingPin = 7;
+#define trigPin 2
+#define echoPin 3
+
+long duration;
+int distance;
 
 //##################################################################################
 //-----------  Do not Replace R1 with a resistor lower than 300 ohms    ------------
@@ -89,6 +93,8 @@ void setup()
   pinMode(ECPin,INPUT);
   pinMode(ECPower, OUTPUT);//Setting pin for sourcing current
   pinMode(ECGround, OUTPUT);//setting pin for sinking current
+  pinMode(trigPin, OUTPUT);
+  pinMode(echoPin, INPUT);
   digitalWrite(ECGround,LOW);//We can leave the ............ground connected permanantly
   pinMode(5, OUTPUT);
   digitalWrite(5, HIGH);
@@ -146,7 +152,22 @@ ppm=(EC25)*(PPMconversion*1000);
 }
 //************************** End OF EC Function ***************************//
  
- 
+void GetDist() {
+    // Clear the trigPin by setting it LOW:
+  digitalWrite(trigPin, LOW);
+  
+  delayMicroseconds(5);
+ // Trigger the sensor by setting the trigPin high for 10 microseconds:
+  digitalWrite(trigPin, HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trigPin, LOW);
+  
+  // Read the echoPin. pulseIn() returns the duration (length of the pulse) in microseconds:
+  duration = pulseIn(echoPin, HIGH);
+  
+  // Calculate the distance:
+  distance = duration*0.034/2;
+}
  
  
 //***This Loop Is called From Main Loop - Prints to serial info as json to main process***//
@@ -163,12 +184,9 @@ Serial.print(ppm);
 Serial.print(",");
 Serial.print("\"temperature\":");
 Serial.print(Temperature);
-// Serial.print(",");
-// Serial.print("\"cm\":");
-// Serial.print(cm);
-// Serial.print(",");
-// Serial.print("\"in\":");
-// Serial.print(inches);
+Serial.print(",");
+Serial.print("\"cm\":");
+Serial.print(distance);
 Serial.println("}");
  
 /*
@@ -181,55 +199,17 @@ Serial.print(EC);
 Serial.println("Siemens");
 //********** end of Debugging Prints *********
 */
+
 };
-
-long microsecondsToInches(long microseconds) {
-  // According to Parallax's datasheet for the PING))), there are 73.746
-  // microseconds per inch (i.e. sound travels at 1130 feet per second).
-  // This gives the distance travelled by the ping, outbound and return,
-  // so we divide by 2 to get the distance of the obstacle.
-  // See: http://www.parallax.com/dl/docs/prod/acc/28015-PING-v1.3.pdf
-  return microseconds / 74 / 2;
-}
-
-long microsecondsToCentimeters(long microseconds) {
-  // The speed of sound is 340 m/s or 29 microseconds per centimeter.
-  // The ping travels out and back, so to find the distance of the object we
-  // take half of the distance travelled.
-  return microseconds / 29 / 2;
-}
- 
  
 //************************************* Main Loop - Runs Forever ***************************************************************//
 //Moved Heavy Work To subroutines so you can call them from main loop without cluttering the main loop
 void loop()
 {
-  // establish variables for duration of the ping, and the distance result
-  // in inches and centimeters:
- 
-  
-  // The PING))) is triggered by a HIGH pulse of 2 or more microseconds.
-  // Give a short LOW pulse beforehand to ensure a clean HIGH pulse:
-  // pinMode(pingPin, OUTPUT);
-  // digitalWrite(pingPin, LOW);
-  // delayMicroseconds(2);
-  // digitalWrite(pingPin, HIGH);
-  // delayMicroseconds(5);
-  // digitalWrite(pingPin, LOW);
-  
-  // The same pin is used to read the signal from the PING))): a HIGH pulse
-  // whose duration is the time (in microseconds) from the sending of the ping
-  // to the reception of its echo off of an object.
-  // pinMode(pingPin, INPUT);
-  // duration = pulseIn(pingPin, HIGH);
-  
-  // // convert the time into a distance
-  // inches = microsecondsToInches(duration);
-  // cm = microsecondsToCentimeters(duration);
    
+  GetDist();
   GetEC();          //Calls Code to Go into GetEC() Loop [Below Main Loop] dont call this more that 1/5 hhz [once every five seconds] or you will polarise the water
   PrintReadings();  // Cals Print routine [below main loop]
-   
    
   delay(60000);
  
