@@ -81,7 +81,6 @@ float Vdrop= 0;
 float Rc= 0;
 float buffer=0;
  
-long duration, inches, cm;
  
  
 //*********************************Setup - runs Once and sets pins etc ******************************************************//
@@ -94,7 +93,7 @@ void setup()
   pinMode(ECPower, OUTPUT);//Setting pin for sourcing current
   pinMode(ECGround, OUTPUT);//setting pin for sinking current
   pinMode(trigPin, OUTPUT);
-  pinMode(echoPin, INPUT);
+  pinMode(echoPin, INPUT_PULLUP);
   digitalWrite(ECGround,LOW);//We can leave the ............ground connected permanantly
   pinMode(5, OUTPUT);
   digitalWrite(5, HIGH);
@@ -153,20 +152,17 @@ ppm=(EC25)*(PPMconversion*1000);
 //************************** End OF EC Function ***************************//
  
 void GetDist() {
-    // Clear the trigPin by setting it LOW:
-  digitalWrite(trigPin, LOW);
-  
-  delayMicroseconds(5);
- // Trigger the sensor by setting the trigPin high for 10 microseconds:
-  digitalWrite(trigPin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(trigPin, LOW);
-  
-  // Read the echoPin. pulseIn() returns the duration (length of the pulse) in microseconds:
-  duration = pulseIn(echoPin, HIGH);
-  
-  // Calculate the distance:
-  distance = duration*0.034/2;
+    digitalWrite(trigPin, LOW); // Set the trigger pin to low for 2uS 
+    delayMicroseconds(2); 
+    
+    digitalWrite(trigPin, HIGH); // Send a 10uS high to trigger ranging 
+    delayMicroseconds(20); 
+    
+    digitalWrite(trigPin, LOW); // Send pin low again 
+    int distance = pulseIn(echoPin, HIGH,26000); // Read in times pulse 
+    
+    distance= distance/58; //Convert the pulse duration to distance
+                           //You can add other math functions to calibrate it well
 }
  
  
