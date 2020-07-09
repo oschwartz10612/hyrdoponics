@@ -14,8 +14,8 @@
  
 //************************* User Defined Variables ********************************************************//
  
-#define trigPin 2
-#define echoPin 3
+#define trigPin 7
+#define echoPin 6
 
 long duration;
 int distance;
