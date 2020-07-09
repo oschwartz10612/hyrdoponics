@@ -159,7 +159,7 @@ void GetDist() {
     delayMicroseconds(20); 
     
     digitalWrite(trigPin, LOW); // Send pin low again 
-    int distance = pulseIn(echoPin, HIGH,26000); // Read in times pulse 
+    distance = pulseIn(echoPin, HIGH,26000); // Read in times pulse 
     
     distance= distance/58; //Convert the pulse duration to distance
                            //You can add other math functions to calibrate it well
@@ -207,7 +207,7 @@ void loop()
   GetEC();          //Calls Code to Go into GetEC() Loop [Below Main Loop] dont call this more that 1/5 hhz [once every five seconds] or you will polarise the water
   PrintReadings();  // Cals Print routine [below main loop]
    
-  delay(6000);
+  delay(60000);
  
 }
 //************************************** End Of Main Loop **********************************************************************//
