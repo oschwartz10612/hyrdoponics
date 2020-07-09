@@ -207,7 +207,7 @@ void loop()
   GetEC();          //Calls Code to Go into GetEC() Loop [Below Main Loop] dont call this more that 1/5 hhz [once every five seconds] or you will polarise the water
   PrintReadings();  // Cals Print routine [below main loop]
    
-  delay(60000);
+  delay(6000);
  
 }
 //************************************** End Of Main Loop **********************************************************************//
