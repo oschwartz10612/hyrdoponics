@@ -75,6 +75,7 @@ async function main() {
             client.publish('home-assistant/hydroponics/ec', sensorData.ec.toString());
             client.publish('home-assistant/hydroponics/ppm', sensorData.ppm.toString());
             client.publish('home-assistant/hydroponics/temperature', sensorData.temperature.toString());
+            client.publish('home-assistant/hydroponics/water', sensorData.cm.toString());
             client.publish('home-assistant/hydroponics/arduinoStatus', 'online');
         });
 
